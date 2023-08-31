@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using TMPro;
 
@@ -10,6 +10,9 @@ public class DataGatherer : MonoBehaviour {
     private static int totalSteps = 0;
     private static float totalRewards = 0f;
     private static float totalTime = 0f;
+
+
+    private const string LOG_NAME = "Log";
 
 
     [SerializeField]
@@ -37,6 +40,18 @@ public class DataGatherer : MonoBehaviour {
 
 
 
+    private void Start() {
+        Calculate();
+        SendAverages( true );
+    }
+
+
+    private void OnApplicationQuit() {
+        Calculate();
+        SendAverages( true );
+    }
+
+
     private void Update() {
         _timeSinceLastClock += Time.deltaTime;
     }
@@ -46,10 +61,17 @@ public class DataGatherer : MonoBehaviour {
         _episodesCompleted = episodesCompleted;
         ++totalEpisodes;
 
+        Calculate( rewardAchieved, stepsTaken, episodesCompleted );
+        bool write = totalEpisodes % 5000 == 0;
+        SendAverages( write );
+    }
+
+
+    private void Calculate( float rewardAchieved = 0f, int stepsTaken = 0, int episodesCompleted = 0 ) {
         float timeTaken = _timeSinceLastClock;
         _timeSinceLastClock = 0;
 
-        if ( rewardAchieved > 0f ) {
+        if ( rewardAchieved > Mathf.Epsilon ) {
             ++_wins;
             ++totalWins;
         }
@@ -59,17 +81,40 @@ public class DataGatherer : MonoBehaviour {
         totalSteps += stepsTaken;
         _time += timeTaken;
         totalTime += timeTaken;
-
-        SendAverages();
     }
 
 
-    private void SendAverages() {
-        _cumulativeEpisodeText.text = $"Total amount of episodes: {totalEpisodes}";
-        _cumulativeWinText.text = $"average wins: {GetAverageWins()}";
-        _cumulativeRewardText.text = $"average reward acquired: {GetAverageReward().ToString( "0.000" )}";
-        _cumulativeStepText.text = $"average steps taken: {GetAverageSteps()}";
-        _cumulativeTimeText.text = $"average time taken: {GetAverageTime().ToString( "0.00" )}";
+    private void SendAverages( bool write ) {
+        string cumulativeEpisode = $"total amount of episodes: {totalEpisodes}";
+        string cumulativeWins = $"average wins: {GetAverageWins()}";
+        string cumulativeReward = $"average reward acquired: {GetAverageReward().ToString( "0.000" )}";
+        string cumulativeSteps = $"average steps taken: {GetAverageSteps()}";
+        string cumulativeTimeTaken = $"average time taken: {GetAverageTime().ToString( "0.00" )}";
+
+        _cumulativeEpisodeText.text = cumulativeEpisode;
+        _cumulativeWinText.text = cumulativeWins;
+        _cumulativeRewardText.text = cumulativeReward;
+        _cumulativeStepText.text = cumulativeSteps;
+        _cumulativeTimeText.text = cumulativeTimeTaken;
+
+        // Write to disk
+        if ( write ) {
+            Write( cumulativeEpisode, cumulativeWins, cumulativeReward, cumulativeSteps, cumulativeTimeTaken );
+        }
+    }
+
+
+    private void Write( string episode, string wins, string rewards, string steps, string time ) {
+        //Path of the file
+        string path = Application.persistentDataPath + $"/{LOG_NAME}.txt";
+
+        // Combine text
+        DateTime now = System.DateTime.Now;
+        string content = $"{now.ToString()}:\r\n{episode}\r\n{wins}\r\n{rewards}\r\n{steps}\r\n{time}\r\n\r\n";
+
+        // Write
+        StreamWriter writer = new StreamWriter( path, true );
+        writer.Write( content );
     }
 
 
