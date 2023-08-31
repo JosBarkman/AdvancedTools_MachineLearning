@@ -106,7 +106,7 @@ public class DataGatherer : MonoBehaviour {
 
     private void Write( string episode, string wins, string rewards, string steps, string time ) {
         //Path of the file
-        string path = Application.persistentDataPath + $"/{LOG_NAME}.txt";
+        /*string path = Application.persistentDataPath + $"/{LOG_NAME}.txt";
 
         // Combine text
         DateTime now = System.DateTime.Now;
@@ -114,7 +114,7 @@ public class DataGatherer : MonoBehaviour {
 
         // Write
         StreamWriter writer = new StreamWriter( path, true );
-        writer.Write( content );
+        writer.Write( content );*/
     }
 
 
