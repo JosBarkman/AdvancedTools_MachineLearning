@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 03e577cb4735c1742b14852c95517056
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _advancedToolsAgent: {instanceID: 0}
+  - _targetPrefab: {fileID: 1831955185193231161, guid: 62466a7a55c541c4fb23a313e2eaddda,
+      type: 3}
+  - _cumulativeRewardText: {instanceID: 0}
+  - _obstaclePrefab: {fileID: 163133869200874183, guid: 2c0e2bbde4d9dd147bb5c72d9ff682e3,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
